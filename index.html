@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Dad Chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #00f; padding: 3px 0 15px 15px; }
+      /*form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }*/
+      form button {color: white; font-weight: bold; background: green; border: 5px inset orange; padding: 10px 20px; }
+	  
+      #messages { list-style-type: none; margin: 0; padding: 20px; background:pink;}
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+	  #inputB_senderBox{float: right;color: white;}	 
+	  textarea {font-size: 2em; font-family: monospace;}
+    </style>
+  </head>
+  <body>
+	<header><h1>Dad Chat</h1></header>
+	
+	<section id="inputBox">
+		<form action="">
+			<textarea id="m" rows="8" cols="30"></textarea><br />
+			<button>Send Message</button>
+			
+			<div id="inputB_senderBox">
+			
+				<div class="inputB_sender">
+					<input name="rb_sender" id="in_sendDad" type="radio" checked />
+					<label for="in_sendDad">Dad</label>
+				</div>
+				
+				<div class="inputB_sender">
+					<input name="rb_sender" type="radio" id="in_sendSon" />
+					<label for="in_sendSon">Sean</label>
+				</div>
+			</div><!--  END inputB_senderBox -->
+		</form>
+	</section>
+	    
+
+    <ul id="messages"></ul><!--OUTPUT-->
+
+	
+	
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script>
+	$(function () {
+		var socket = io();
+		$('form').submit(function(){
+			var msgTxt = $('#m').val();
+			var senderId = document.getElementById("in_sendDad").checked ? "Dad" : "Sean";
+
+			var msgObj = {
+				sender: senderId,
+				txt: msgTxt
+			};
+
+			socket.emit('chat message', msgObj);
+			$('#m').val('');
+			return false;
+		});
+		
+		socket.on('chat message', function(msg){
+			$('#messages').append($('<li>').html("<em>" + msg.sender + " says: </em>" +msg.txt));
+		});
+		
+		
+	});
+	  
+	</script>
+  </body>
+</html>
